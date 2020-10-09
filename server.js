@@ -10,7 +10,15 @@ const {
     GraphQLNonNull
 } = require('graphql');
 
+const books = [
+    { id: 1, name: 'test', authorId: 1 },
+    { id: 2, name: 'test2', authorId: 2 }
+]
 
+const authors = [
+    { id: 1, name: 'test' },
+    { id: 2, name: 'test2' }
+]
 
 const BookType = new GraphQLObjectType({
     name: 'Book',
@@ -18,7 +26,22 @@ const BookType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLNonNull(GraphQLInt) },
         name: { type: GraphQLNonNull(GraphQLString) },
-        authorId: { type: GraphQLNonNull(GraphQLInt) }
+        authorId: { type: GraphQLNonNull(GraphQLInt) },
+        author: { 
+            type: AuthorType,
+            resolve: (book) => {
+                return authors.find(author => author.id === book.authorId)
+            } 
+        }
+    })
+})
+
+const AuthorType = new GraphQLObjectType({
+    name: 'Author',
+    description: 'This represents an author',
+    fields: () => ({
+        id: { type: GraphQLNonNull(GraphQLInt) },
+        name: { type: GraphQLNonNull(GraphQLString) }
     })
 })
 
