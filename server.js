@@ -5,18 +5,20 @@ const {
     GraphQLSchema,
     GraphQLObjectType,
     GraphQLString,
-    GraphQLList
+    GraphQLList,
+    GraphQLInt,
+    GraphQLNonNull
 } = require('graphql');
 
-const schema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-        name: 'HelloWorld', // cant have a space here
-        fields: () => ({
-            message: { 
-                type: GraphQLString,
-                resolve: () => 'Hello World'
-            }
-        })
+
+
+const BookType = new GraphQLObjectType({
+    name: 'Book',
+    description: 'This represents a book written by an author',
+    fields: () => ({
+        id: { type: GraphQLNonNull(GraphQLInt) },
+        name: { type: GraphQLNonNull(GraphQLString) },
+        authorId: { type: GraphQLNonNull(GraphQLInt) }
     })
 })
 
@@ -30,6 +32,10 @@ const RootQueryType = new GraphQLObjectType({
             resolve: () => books
         }
     })
+})
+
+const schema = new GraphQLSchema({
+    query: RootQueryType
 })
 
 app.use('/graphql', expressGraphQL({
