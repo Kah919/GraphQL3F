@@ -1,11 +1,26 @@
 const express = require('express');
-const graphqlHTTP = require('express-graphql');
+const expressGraphQL = require('express-graphql');
 const app = express();
+const {
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLString
+} = require('graphql');
 
-const schema = require('./schema');
+const schema = new GraphQLSchema({
+    query: new GraphQLObjectType({
+        name: 'HelloWorld', // cant have a space here
+        fields: () => ({
+            message: { 
+                type: GraphQLString,
+                resolve: () => 'Hello World'
+            }
+        })
+    })
+})
 
-app.use('/graphql', graphqlHTTP({
-    schema,
+app.use('/graphql', expressGraphQL({
+    schema, schema,
     graphiql: true
 }))
 
