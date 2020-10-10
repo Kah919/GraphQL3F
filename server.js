@@ -20,10 +20,11 @@ const authors = [
     { id: 2, name: 'test2' }
 ]
 
+// better to use functions for fields so that they don't get called before being defined
 const BookType = new GraphQLObjectType({
     name: 'Book',
     description: 'This represents a book written by an author',
-    fields: () => ({
+    fields: () => ({ // better to return a function than an object because BookType needs to be before AuthorType and AuthorType needs to be before BookType
         id: { type: GraphQLNonNull(GraphQLInt) },
         name: { type: GraphQLNonNull(GraphQLString) },
         authorId: { type: GraphQLNonNull(GraphQLInt) },
@@ -82,8 +83,29 @@ const RootQueryType = new GraphQLObjectType({
     })
 })
 
+const RootMutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    description: 'Root Mutation',
+    fields: () => ({
+        addBook: {
+            type: BookType,
+            description: 'Add a book',
+            args: {
+                name: { type: GraphQLNonNull(GraphQLString) },
+                authorId: { type: GraphQLNonNull(GraphQLInt) }
+            },
+            resolve: (parent, args) => {
+                const book = { id: books.length + 1, name: args.name, authorId: args.authorId }
+                books.push(book)
+                return book
+            }
+        }
+    })
+})
+
 const schema = new GraphQLSchema({
-    query: RootQueryType
+    query: RootQueryType,
+    mutation: RootMutationType
 })
 
 app.use('/graphql', expressGraphQL({
